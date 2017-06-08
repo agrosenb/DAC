@@ -34,7 +34,8 @@ DAC * objectPointer;
 
 //Relay pins
 const int rSol = 2; //solenoid valve
-const int rT1 = 3; //transducer 1
+const int rT1 = 3; //transducer pin
+
 
 
 
@@ -46,8 +47,10 @@ void setup() {
     allDacs[i]= objectPointer;
   }
 
-  pinMode(rSol, OUTPUT);
-  pinMode(rT1, OUTPUT);
+  pinMode(rSol, OUTPUT);  //initialize solenoid valve pin
+  
+  //initialized transducers pins
+  pinMode(rT1, OUTPUT);   
 
   pinMode (pRead, INPUT);
   

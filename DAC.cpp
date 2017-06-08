@@ -18,7 +18,7 @@ DAC::DAC(int SS, float refVoltage)
 	pinMode (SS5, OUTPUT);
 	pinMode (SS6, OUTPUT);
 	
-	inc = refVoltage/4096; //should it be 4096 or 4095?
+	inc = refVoltage/4096; 
 	
 	digitalWrite(SS1, HIGH); 
 	digitalWrite(SS2, HIGH);
