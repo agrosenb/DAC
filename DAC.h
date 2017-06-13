@@ -11,10 +11,13 @@ class DAC
 		void on(float outputVoltage);
 		void off();
 		//ADC functions
-		void read(byte channel);
+		void read(byte channel, float calibrate);
+		float calibrate(byte channel);
 
 	private:
 		int _SS;
+		float _refVoltage;
+		float _cal;
 		
 		float inc;
 		word output;
