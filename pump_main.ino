@@ -5,6 +5,7 @@ const int numDacs=4; //user input: how many DACS do you have?
 
 float pInVoltage =0; // initialize inlet pressure
 float pIn=0;
+
 //float pAtm=101.8; //kPa -- this also should be extern, referenced in .cpp file in DAC::read() 
 
 //must use these pins, unless also changing them in the header file -- how to use extern variables with arduino??
@@ -42,7 +43,7 @@ float cal1,cal2,cal3,cal4;
 
 
 void setup() {
-
+  
   //to control using allDacs
   for (int i=0; i<numDacs; i++){
     objectPointer = new DAC (SS1+2*i, refVoltage);
@@ -55,27 +56,13 @@ void setup() {
   pinMode(rT1, OUTPUT);   
   pinMode (pRead, INPUT);
   
-  
-
   Serial.begin(250000);
-
 
     cal1=ADC1.calibrate(0);
     cal2=ADC1.calibrate(1);
     cal3=ADC2.calibrate(0);
     cal4=ADC2.calibrate(1);
-
-    Serial.print(cal1);
-    Serial.print("\n");
-    Serial.print(cal2);
-    Serial.print("\n");
-    Serial.print(cal3);
-    Serial.print("\n");
-    Serial.print(cal4);
-    Serial.print("\n");
 }
-
-float psi=1.0/6; //1 volt per 6 psi
 
 void loop() {
  //Uncomment following block to control all DACS at once
@@ -84,26 +71,26 @@ void loop() {
 //      allDacs[i]->on(1.2345);
 //    }
 
-
   digitalWrite(rSol, LOW); 
   digitalWrite(rT1, LOW);
-  DAC1.on(psi*30);
-  DAC2.on(psi*25);
-  DAC3.on(psi*15);
-  DAC4.on(psi*10);
+  //DAC1.on(30);
+  DAC2.on(25);
+  DAC3.on(15);
+  DAC4.on(10);
   ADC1.read(0,cal1);
   ADC1.read(1,cal2);
   ADC2.read(0,cal3);
   ADC2.read(1,cal4);
+  Serial.print("\n");
 
-  
- pInVoltage = analogRead(pRead)/1024.0*refVoltage;
+  //inlet pressure  
+  pInVoltage = analogRead(pRead)/1024.0*refVoltage;
   pIn=((pInVoltage/refVoltage+0.00842)/0.002421-101.8)*0.145037738; //change 101.8 to pAtm (needs to be extern variable)
-  
-  //inlet pressure
+
+  /*
   Serial.print("pIn: ");
   Serial.print(pIn,2);
   
   Serial.print("\n");
-  
+  */
 }

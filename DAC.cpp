@@ -33,9 +33,13 @@ DAC::DAC(int SS, float refVoltage)
 	
 }
 
-void DAC::on(float outputVoltage)
+void DAC::on(float outputPressure)
 {
 	byte data=0;
+	
+	float outputVoltage=0;
+	
+	outputVoltage=outputPressure/6.0;
 	
 	if (outputVoltage>=_refVoltage)	//Since we can't output a voltage to the dac greater than the reference voltage,
 									//if the user asks for a voltage that is impossible, it sets the output to the highest possible value
@@ -85,6 +89,7 @@ void DAC::read(byte channel, float calibrate) //channel 0 or 1
 	float adcOut=0;
 	float convertedVoltage=0;
 	byte _channel=0;
+	float readVoltage=0;
 	
 	float pGauge=0;
 	
@@ -102,22 +107,26 @@ void DAC::read(byte channel, float calibrate) //channel 0 or 1
 	conca=((vinMSB<<8)&0B1111111100000000)+vinLSB;
 	adcOut=(float)conca;
 	
+	readVoltage=inc*adcOut; //this variable exists only to show pre-calibrated values - to see which pressure sensors are working
+	
 	convertedVoltage=inc*adcOut+calibrate; //take the voltage read by the dac and add the calibration value
 	
 	//pGauge = ((convertedVoltage-0.95)/_refVoltage)*30;
-	pGauge = ((((convertedVoltage)/_refVoltage+0.00842)/0.002421-101.8)*0.145037738); //gauge pressure using transfer function of MPXH6400A pressure sensor, subtract atmospheric pressure, convert to psi
+	pGauge = (((convertedVoltage)/_refVoltage+0.00842)/0.002421-101.8)*0.145037738; //gauge pressure using transfer function of MPXH6400A pressure sensor, subtract atmospheric pressure, convert to psi
 																				  //should use pAtm (External variable) instead of 101.8
 	
 	//Serial.begin(9600);
 	
-	Serial.print("[mcp");
+	Serial.print("[");
 	Serial.print(_SS);
 	Serial.print(" ch");
 	Serial.print(channel);
-	Serial.print("]: ");
-	Serial.print(convertedVoltage, 3);
-	Serial.print( "Pg=");
-	Serial.print(pGauge,6);
+	Serial.print("] rd=");
+	Serial.print(readVoltage,1);
+	Serial.print(" cal=");
+	Serial.print(convertedVoltage, 2);
+	Serial.print(" Pg=");
+	Serial.print(pGauge,4);
 	Serial.print("\t");	
 	
 	digitalWrite(_SS, HIGH);
