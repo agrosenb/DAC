@@ -8,7 +8,7 @@ class DAC
 	public:
 		DAC (int SS, float refVoltage);
 		//DAC functions
-		void on(float outputVoltage);
+		void on(float outputPressure);
 		void off();
 		//ADC functions
 		void read(byte channel, float calibrate);
