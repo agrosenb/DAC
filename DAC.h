@@ -13,6 +13,7 @@ class DAC
 		//ADC functions
 		void read(byte channel, float calibrate);
 		float calibrate(byte channel);
+		//void pressureCheck
 
 	private:
 		int _SS;
@@ -37,4 +38,13 @@ class DAC
 		void test(float hello);
 };	 */	
 
+class relay
+{
+	public:
+		relay (int selPin);
+		void on ();
+		void off ();
+	private:
+		int _selPin;
+};
 #endif

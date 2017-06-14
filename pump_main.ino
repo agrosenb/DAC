@@ -1,6 +1,6 @@
 #include <DAC.h>
 
-const float refVoltage=5; //Set this value depending on exact input voltage from source (ie USB)
+const float refVoltage=4.85; //Set this value depending on exact input voltage from source (ie USB)
 const int numDacs=4; //user input: how many DACS do you have?
 
 float pInVoltage =0; // initialize inlet pressure
@@ -36,10 +36,21 @@ DAC * allDacs [4];
 DAC * objectPointer;
 
 //Relay pins
-const int rSol = 2; //solenoid valve
-const int rT1 = 3; //transducer pin
+const int rSolPin = 2; //solenoid valve
+const int rTPin = 3; //transducer pin
 
-float cal1,cal2,cal3,cal4;
+//relay NAME (pin)
+relay solenoid (rSolPin);
+relay transducers (rTPin);
+  
+
+
+float cal1,cal2,cal3,cal4;  //calibration variables
+
+//**this section is temporary to test the analog read functionality
+float testRead=0;
+int testPin=9;
+//**
 
 
 void setup() {
@@ -50,11 +61,12 @@ void setup() {
     allDacs[i]= objectPointer;
   }
 
-  pinMode(rSol, OUTPUT);  //initialize solenoid valve pin
+  pinMode(rSolPin, OUTPUT);  //initialize solenoid valve pin
   
-  //initialized transducers pins
-  pinMode(rT1, OUTPUT);   
-  pinMode (pRead, INPUT);
+  pinMode(rTPin, OUTPUT);   //initialized transducers pins
+  pinMode (pRead, INPUT);   //initialize inlet pressure reading (from analog in pin built into board)
+
+  pinMode (testPin, INPUT); //**temporary to test analog read values
   
   Serial.begin(250000);
 
@@ -71,21 +83,32 @@ void loop() {
 //      allDacs[i]->on(1.2345);
 //    }
 
-  digitalWrite(rSol, LOW); 
-  digitalWrite(rT1, LOW);
-  //DAC1.on(30);
-  DAC2.on(25);
-  DAC3.on(15);
-  DAC4.on(10);
-  ADC1.read(0,cal1);
+  solenoid.on();
+  pIn=readInlet(); //returns psi of inlet valve
+  
+  if (pIn>41){  //if the inlet pressure is greater than 41 psi, turn on the transducer relays
+    transducers.on();
+  }else{
+    transducers.off();
+  }
+
+  //DACX.on(psi_value) or DAC.off()
+  DAC1.off();
+  DAC2.on(30);
+  DAC3.on(25);
+  DAC4.on(23);
+
+  //ADCX.read(channel, calibration_value)
+  //ADC1.read(0,cal1);
   ADC1.read(1,cal2);
   ADC2.read(0,cal3);
   ADC2.read(1,cal4);
   Serial.print("\n");
 
-  //inlet pressure  
-  pInVoltage = analogRead(pRead)/1024.0*refVoltage;
-  pIn=((pInVoltage/refVoltage+0.00842)/0.002421-101.8)*0.145037738; //change 101.8 to pAtm (needs to be extern variable)
+  //*temporary to test analog read
+  testRead=analogRead(testPin);
+  Serial.print(testRead);
+  Serial.print("\n");
 
   /*
   Serial.print("pIn: ");
@@ -94,3 +117,14 @@ void loop() {
   Serial.print("\n");
   */
 }
+
+
+
+float readInlet (){
+  pInVoltage = analogRead(pRead)/1024.0*refVoltage; //using built-in MEGA analog ADC therefore only 10 bit (1024)
+  pIn=((pInVoltage/refVoltage+0.00842)/0.002421-101.8)*0.145037738; //gauge pressure using transfer function of MPXH6400A pressure sensor, subtract atmospheric pressure, convert to psi 
+                                                                    //change 101.8 to pAtm (needs to be extern variable)
+
+  return pIn;
+}
+
