@@ -122,7 +122,7 @@ void DAC::read(byte channel, float calibrate) //channel 0 or 1
 	Serial.print(" ch");
 	Serial.print(channel);
 	Serial.print("] rd=");
-	Serial.print(readVoltage,1);
+	Serial.print(readVoltage,4);
 	Serial.print(" cal=");
 	Serial.print(convertedVoltage, 2);
 	Serial.print(" Pg=");
@@ -188,12 +188,28 @@ float DAC::calibrate(byte channel)
 	
 		//example: if DAC reads 0.9V at atmospheric when it should read 1.19V, _cal=1.10 ---- this value is added to the reading 
 	
-	_cal=1.19-avgV; //add this value to voltages in dac::read
+	_cal=1.154483662-avgV; //add this value to voltages in dac::read
 	SPI.endTransaction();
 	
 	
 	return _cal;
 }
+
+//int DAC::pressureCheck{
+
+//}
+
+relay::relay(int selPin){
+	_selPin=selPin;
+	
+}
+void relay::on(){
+	digitalWrite(_selPin, LOW);
+}
+void relay::off(){
+	digitalWrite(_selPin, HIGH);
+}
+
 	
 /* ADC::ADC (int a)
 {
