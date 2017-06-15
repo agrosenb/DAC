@@ -10,6 +10,12 @@ DAC::DAC(int SS, float refVoltage)
 	_SS=SS;
 	_refVoltage=refVoltage;
 	
+	// I don't think that this part is necessary to put all the individual pins from the global variable.
+	// You could do pinMode(_SS, OUTPUT) and digitalWrite(_SS, HIGH) and each one would be initialized when the instance
+	// of the class is created and so if you change the global variable, then you would not have to change anything here. 
+	
+	// Also, then the constants would not need to be declared within the class definition.
+	
 	//DAC pins
 	pinMode (SS1, OUTPUT);
 	pinMode (SS2, OUTPUT);
@@ -141,6 +147,8 @@ float DAC::calibrate(byte channel)
 	
 	//note: unsure proper way of using functions within class, so manual copy and pasted most code from DAC::read with some slight changes -- I am sure there is a more effective way of doing this.
 	
+	// to use the function within a class you can just call it with the same arguments (ie off() would just turn this specific DAC off)
+	
 	byte vinMSB=0;
 	byte vinLSB=0;
 	word conca=0;
@@ -159,6 +167,9 @@ float DAC::calibrate(byte channel)
 	SPI.beginTransaction(SPISettings(20000000, MSBFIRST, SPI_MODE0));
 	
 
+	// If this works it is good, but in terms of organization, I would suggest using an instance of the ADC class within the DAC
+	// class for calibration rather than this more manual way of doing it. I know you did not do the ADC class yet but it is 
+	// something to keep in mind.
 	
 	for (int y=0; y<setCal; y++){		//reads ADC values as many times as determined by setCal and averages the values after
 		
