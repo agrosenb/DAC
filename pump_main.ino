@@ -1,6 +1,6 @@
 #include <DAC.h>
 
-const float refVoltage=4.85; //Set this value depending on exact input voltage from source (ie USB)
+const float refVoltage=4.95; //Set this value depending on exact input voltage from source (ie USB)
 const int numDacs=4; //user input: how many DACS do you have?
 
 float pInVoltage =0; // initialize inlet pressure
@@ -105,7 +105,7 @@ void loop() {
   ADC2.read(1,cal4);
   Serial.print("\n");
 
-  //*temporary to test analog read
+  /*temporary to test analog read
   testRead=analogRead(testPin);
   Serial.print(testRead);
   Serial.print("\n");

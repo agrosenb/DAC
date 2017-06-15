@@ -44,7 +44,7 @@ void DAC::on(float outputPressure)
 	if (outputVoltage>=_refVoltage)	//Since we can't output a voltage to the dac greater than the reference voltage,
 									//if the user asks for a voltage that is impossible, it sets the output to the highest possible value
 	{
-		outputVoltage=_refVoltage-.1;
+		outputVoltage=_refVoltage-.02;
 	}
 	output=(word)(outputVoltage/inc);
 	digitalWrite(_SS,LOW);
@@ -188,7 +188,10 @@ float DAC::calibrate(byte channel)
 	
 		//example: if DAC reads 0.9V at atmospheric when it should read 1.19V, _cal=1.10 ---- this value is added to the reading 
 	
-	_cal=1.154483662-avgV; //add this value to voltages in dac::read
+	
+
+	_cal=(_refVoltage*(0.002421*101.8-0.00842))-avgV; 		//(mpx_sensor transfer function solving for output voltage, using 101.8 as the given pressure (atmospheric) and finding the difference between that value and the avg calibration value
+															//add this value to voltages in dac::read
 	SPI.endTransaction();
 	
 	
