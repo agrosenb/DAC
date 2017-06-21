@@ -17,7 +17,7 @@ DAC::DAC(int SS, float refVoltage)
 	pinMode (SS4, OUTPUT);
 	//ADC pins
 	pinMode (SS5, OUTPUT);
-	pinMode (SS6, OUTPUT);
+	pinMode (SS6, OUTPUT);	
 	
 	inc = _refVoltage/4096; 
 	
@@ -28,6 +28,8 @@ DAC::DAC(int SS, float refVoltage)
 	
 	digitalWrite(SS5, HIGH);
 	digitalWrite(SS6, HIGH);
+	
+
 	
 	SPI.begin();
 	
@@ -42,9 +44,9 @@ void DAC::on(float outputPressure)
 	outputVoltage=outputPressure/6.0;
 	
 	if (outputVoltage>=_refVoltage)	//Since we can't output a voltage to the dac greater than the reference voltage,
-									//if the user asks for a voltage that is impossible, it sets the output to the highest possible value
+									//if the user asks for a voltage that is impossible, it sets the output to 0
 	{
-		outputVoltage=_refVoltage-.02;
+		outputVoltage=0;
 	}
 	output=(word)(outputVoltage/inc);
 	digitalWrite(_SS,LOW);

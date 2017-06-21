@@ -1,6 +1,6 @@
 #include <DAC.h>
 
-const float refVoltage=4.95; //Set this value depending on exact input voltage from source (ie USB)
+const float refVoltage=5; //Set this value depending on exact input voltage from source (ie USB)
 const int numDacs=4; //user input: how many DACS do you have?
 
 float pInVoltage =0; // initialize inlet pressure
@@ -20,6 +20,10 @@ const int SS6=32;
 
 //built in ADC pin
 const int pRead = 1; //analog input
+
+//LED pins
+const int ledG=6;
+const int ledY=7;
 
 //DAC name (pinNumber, referenceVoltage)
 DAC DAC1 (SS1,refVoltage);
@@ -67,7 +71,13 @@ void setup() {
   pinMode (pRead, INPUT);   //initialize inlet pressure reading (from analog in pin built into board)
 
   pinMode (testPin, INPUT); //**temporary to test analog read values
-  
+
+  pinMode (ledY, OUTPUT);
+  pinMode (ledG, OUTPUT);
+
+  digitalWrite(ledG, LOW);
+  digitalWrite(ledY, LOW);
+
   Serial.begin(250000);
 
     cal1=ADC1.calibrate(0);
@@ -75,7 +85,6 @@ void setup() {
     cal3=ADC2.calibrate(0);
     cal4=ADC2.calibrate(1);
 }
-
 void loop() {
  //Uncomment following block to control all DACS at once
 //MAKE THIS INTO ITS OWN "ALLDACS-OFF, ALLDACS-ON" CLASS -----
@@ -88,16 +97,26 @@ void loop() {
   
   if (pIn>41){  //if the inlet pressure is greater than 41 psi, turn on the transducer relays
     transducers.on();
-  }else{
-    transducers.off();
-  }
+    digitalWrite(ledG, HIGH);
+    digitalWrite(ledY, LOW);
 
+  //testDAC();
+  
   //DACX.on(psi_value) or DAC.off()
   DAC1.off();
-  DAC2.on(30);
-  DAC3.on(25);
-  DAC4.on(23);
+  DAC2.on(10);
+  DAC3.on(20);
+  DAC4.on(28);
 
+  }else{
+    transducers.off();
+    digitalWrite (ledG, LOW);
+    digitalWrite (ledY, HIGH);
+    delay (1000);
+    digitalWrite (ledY, LOW);
+    delay(1000);
+  }
+  
   //ADCX.read(channel, calibration_value)
   //ADC1.read(0,cal1);
   ADC1.read(1,cal2);
@@ -105,17 +124,13 @@ void loop() {
   ADC2.read(1,cal4);
   Serial.print("\n");
 
-  /*temporary to test analog read
-  testRead=analogRead(testPin);
-  Serial.print(testRead);
-  Serial.print("\n");
 
-  /*
+  
   Serial.print("pIn: ");
   Serial.print(pIn,2);
   
   Serial.print("\n");
-  */
+  
 }
 
 
@@ -126,5 +141,16 @@ float readInlet (){
                                                                     //change 101.8 to pAtm (needs to be extern variable)
 
   return pIn;
+}
+void testDAC(){
+     float stp=5.0/4096.0; //min voltage increment of 12 bit DAC
+     
+     for (float i=0; i<5; i=i+stp*10){
+       DAC2.on(6*i); //6*[voltage value] gives the psi output that is required by the function.
+       delay(50); 
+       DAC2.off();
+       delay(10); 
+      }
+   
 }
 
