@@ -29,6 +29,9 @@ class DAC
 		const int SS4=28;
 		const int SS5=30;
 		const int SS6=32;
+		
+		const int ledY=7;
+		const int ledG=6;
 };
 
 /* class ADC
